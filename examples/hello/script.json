@@ -1,0 +1,16 @@
+{
+  "id": "community.hello",
+  "name": "Hello Yuri",
+  "author": "Yuri SDK example",
+  "api": "1.0",
+  "game": "Any",
+  "permissions": [
+    "ui",
+    "notifications",
+    "storage",
+    "session"
+  ],
+  "description": "A small working example of Yuri controls, notifications and saved settings. Start here when writing your first script.",
+  "category": "Examples",
+  "version": "1.0"
+}
