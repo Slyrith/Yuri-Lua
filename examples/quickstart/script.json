@@ -1,0 +1,13 @@
+{
+  "id": "example.quickstart",
+  "name": "My first script",
+  "author": "Yuri SDK example",
+  "api": "1.1",
+  "game": "Any",
+  "version": "1.0.0",
+  "category": "Examples",
+  "permissions": [
+    "ui",
+    "notifications"
+  ]
+}

@@ -95,7 +95,7 @@ def validate_script(folder):
         fail("Invalid script ID")
     for key in ("name", "author"):
         text(manifest, key, 80, required=True)
-    if manifest.get("api") != "1.0" or manifest.get("game") not in ("Any", "Aniimo", "Loftia"):
+    if manifest.get("api") not in ("1.0", "1.1") or manifest.get("game") not in ("Any", "Aniimo", "Loftia"):
         fail("Unsupported API or game")
     permissions = manifest.get("permissions")
     if (not isinstance(permissions, list) or len(permissions) > 4 or

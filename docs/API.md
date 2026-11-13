@@ -1,37 +1,59 @@
-# Yuri Lua SDK 1.0 — platform foundation
+# Yuri Lua API 1.1
 
-Scripts use a separate managed Lua 5.2-compatible interpreter (MoonSharp), not the game's LuaJIT state. LuaJIT-specific FFI and unrestricted game calls are deliberately unavailable. This is the first host API. The goal is community-created gameplay features, not only UI extensions. See ROADMAP.md for the planned gameplay layer; it is not implemented by this release.
+Requires Yuri Launcher 0.11.0+. API 1.0 manifests and positional calls remain supported. New scripts should declare `"api": "1.1"`.
 
-## Try the example
+## Simple controls
 
-Copy `../examples/hello` into `Scripts/hello` beside YuriLauncher.exe. Open **Script library → Installed**, choose **Rescan scripts**, then **Review & enable**. Confirm the exact file hash and requested permissions. Every launch starts scripts OFF. Disable stops its worker and removes its controls. Changes to source, manifest or translations disable it until reviewed again. Downloads require an explicit click; scripts never auto-enable. The Browse tab can read a curated community catalogue once its repository is configured. See `PUBLISHING.md`.
+```lua
+local label = yuri.label("Ready")
+local button = yuri.button("Run", function() print("Clicked") end)
+local enabled = yuri.toggle("Enabled", false, function(value) print(value) end)
+local amount = yuri.slider("Amount", 1, 20, 5, function(value) print(value) end)
+```
 
-To display the controls in Aniimo, choose the new matching Aniimo package using **Choose Yuri file**, enable **Show approved script controls in Aniimo**, and load the matching menu. In-game controls appear under **Misc → Scripts**. The connection expires when the launcher stops; stale session tokens and input outside the published control types/ranges are rejected. Loftia can use the launcher-side manager, but does not yet have this in-game adapter.
+These assign IDs in creation order. For explicit stable IDs, existing `yuri.ui.label(id,text)`, `button(id,text,callback?)`, `toggle(id,text,default,callback?)`, and `slider(id,text,min,max,default,callback?)` remain available.
 
-## Files and permissions
+- `handle:get()` returns a toggle's boolean or slider's number; other controls return nil.
+- `handle:set(value)` updates a toggle/slider without triggering its change callback. Type and bounds are enforced.
+- `handle:set_text(text)` changes the label (up to 240 characters).
+- `button:on_click(callback)` attaches/replaces its click callback.
+- `toggle:on_change(callback)` / `slider:on_change(callback)` attaches/replaces its change callback, receiving the new value.
 
-Each folder needs `script.json` and `main.lua`. IDs are unique lowercase names; `api` must be `1.0`; `game` is `Aniimo`, `Loftia` or `Any`. Optional `Locales/fr.json`, etc. are plain key/string maps used by `yuri.tr` (different from the launcher language-pack envelope). Each package may have 32 translation files. The manager binds identity to the package; Lua cannot select another owner.
+Handle methods accept both colon and dot syntax. A callback setter returns the handle for chaining. Existing explicit-ID code continues to work. These callbacks do not replace a legacy `yuri.on("control", ...)` handler; both can run if you register both.
 
-Permissions: `ui`, `notifications`, `storage`, `session`. A changed hash requires new approval. Authors are self-declared, not verified signatures. Scripts get no arbitrary files, HTTP, shell, CLR/Unity objects, native DLLs, bytecode loader or debug API. A script's settings cannot name a file or access another installed script folder's data. Storage and approvals are bound to the script ID and its installation folder; moving a script folder starts fresh settings.
+## Events
 
-## API
+- `yuri.on("session"|"tick"|"control", callback)` preserves API 1.0's single legacy handler for that event; registering another replaces it.
+- `cancel = yuri.events.subscribe(event, callback)` adds an independent listener. Call `cancel()` to unsubscribe. At most 32 active subscribers per event.
+- Control events include `event.id` and `event.value`. Tick/session payloads follow the existing approved session contract. Session means launcher game/client selection, not proof of a gameplay state.
 
-- `yuri.ui.label(id, text)`, `toggle(id, text, default)`, `slider(id, text, min, max, default)`, `button(id, text)` return a handle. Use `handle.get()` and `handle.set_text(text)` with dot syntax.
-- `yuri.on("control", callback)` receives `event.id`; read the handle for its value.
-- `yuri.on("tick", callback)` runs roughly once per second. `event.seconds` is UTC Unix time; approved `session` access adds the selected game and client.
-- `yuri.on("session", callback)` receives the initial selected game/client. Selection is launcher context, not verified presence in a gameplay scene.
-- `yuri.notify(text)` produces an owner-labelled launcher notification. It does not impersonate an official game message.
-- `yuri.storage.get(key)` / `set(key, string)` store up to 64 bounded strings, with a 32 KB total per script. Settings persist between sessions but scripts do not auto-enable.
-- `yuri.tr(key, fallback)` selects a script's own translation, with fallback.
+## Timers
 
-Maximum eight active scripts, 24 controls each, 256 API calls per request, bounded instruction slices and a 2.5-second response deadline. Each worker has a 128 MB process-memory limit, one-process job limit, restricted UI access and a low-integrity impersonation context with privileges removed on the interpreter thread. Elevated launcher sessions cannot enable scripts. Workers do not run inside Yuri's core or the game's VM. These measures are defense in depth, not an independently audited guarantee against all interpreter/runtime vulnerabilities.
+- `cancel = yuri.after(seconds, callback)` runs once when due on a host tick.
+- `cancel = yuri.every(seconds, callback)` repeats while enabled.
+- `yuri.time()` returns monotonic elapsed seconds in this worker session.
 
-Use VS Code's Lua extension with `../sdk/yuri.d.lua` and the root `.luarc.json` for autocomplete. Runtime source errors appear in the manager; file paths and OS secrets are not part of the API. This preview has no general gameplay-action, entity, drawing, dependency or networking API. Those require separately designed, validated host adapters.
+At most 16 active timers. Seconds must be from 1 to 86400. Host ticks occur roughly once per second; delays can be longer when busy. No exact subsecond scheduling or burst catch-up. Calling `cancel()` is safe more than once. Stopping the script destroys its worker, listeners and timers.
 
-## Platform scope and localization
+## Settings
 
-API 1.0 is the implemented foundation. ROADMAP.md describes the broader gameplay SDK target and separates planned modules from current APIs.
+With `storage` permission:
 
-Launcher localization work and its final volunteer template are paused while the interface develops. Existing fallback catalogues are retained internally.
+```lua
+local count = yuri.settings.get("count", 0)
+yuri.settings.set("count", count + 1)
+```
 
-Optional display metadata in script.json: `description`, `category` and `version`. These do not grant capabilities.
+Supported values: finite numbers, booleans and text. Keys follow the existing lowercase ID rules. Encoded values share the existing 1024-character per-value, 64-key and 32 KB storage limits. Typed values are stored as bounded strings; legacy `yuri.storage.get/set` remains available. API 1.0 strings stay readable. Settings and approvals remain scoped to script ID plus installation folder.
+
+## Notifications and logging
+
+- `yuri.notify(text)`: up to four owner-labelled notifications per update, 500 characters each; requires `notifications`.
+- `yuri.log(text)` or `print(...)`: up to four local log messages per update, 500 characters each. Logging needs no extra permission and gives no arbitrary filesystem access.
+- Runtime errors appear in the script manager. Source-line errors use `main.lua` line numbers. Permission/type/bounds messages include useful hints.
+
+## Permissions and limits
+
+Permissions remain `ui`, `notifications`, `storage`, `session`. Manifest API version may be 1.0 or 1.1. No unrestricted files, HTTP, shell, CLR, native calls, bytecode or game VM access was added. Resource limits and exact-version approval still apply. At most eight active script workers and 24 controls per script; 256 native API calls per request; bounded instruction slices and a 2.5-second host response deadline. Repeated errors stop the affected script rather than retry forever.
+
+The interpreter sandbox has not had an independent security audit. Hash verification checks consistency, not author intent. Gameplay data/actions need a matching tested adapter and are still planned in the platform roadmap.

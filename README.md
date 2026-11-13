@@ -4,14 +4,17 @@
 
 ## Get started
 
-- **Players:** open **Script library** in Yuri Launcher v0.10.0 or later. Download a script, then use **Installed → Review & enable**. Downloads do not automatically run scripts.
-- **Creators:** start with [Hello Yuri](examples/hello), read the [API reference](docs/API.md), and use [sdk/yuri.d.lua](sdk/yuri.d.lua) for editor autocomplete.
+**New to Lua? Start with the [five-minute quick start](docs/QUICKSTART.md), or click Script library → New script in Yuri Launcher 0.11.0+.**
+
+
+- **Players:** open **Script library** in Yuri Launcher v0.11.0 or later. Download a script, then use **Installed → Review & enable**. Downloads do not automatically run scripts.
+- **Creators:** start with the [quick-start template](examples/quickstart) or the original [Hello Yuri](examples/hello), read the [API reference](docs/API.md), and use [sdk/yuri.d.lua](sdk/yuri.d.lua) for editor autocomplete.
 - **Contributors:** read [CONTRIBUTING.md](CONTRIBUTING.md). Submit scripts through pull requests; maintainers review catalogue entries before publication.
 - **Maintainers:** use [PUBLISHING.md](docs/PUBLISHING.md) to publish ZIP assets and update the catalogue.
 
 ## What is available now?
 
-API **1.0 foundation** supports script controls, notifications, private settings and launcher session/tick events. Scripts run in an isolated Lua interpreter; they do not get unrestricted access to Yuri, the OS or the game's Lua state.
+API **1.1 foundation** supports script easy controls and callbacks, typed saved settings, cancellable timers, local logging and launcher session/tick events. Scripts run in an isolated Lua interpreter; they do not get unrestricted access to Yuri, the OS or the game's Lua state.
 
 Broader gameplay modules for player/entity data, supported actions, custom visuals and automation are planned. They are **not implemented by this SDK yet**. See the [platform roadmap](docs/ROADMAP.md).
 

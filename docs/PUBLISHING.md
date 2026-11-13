@@ -21,7 +21,7 @@ If you use a different owner, repository name, tag or asset filename, rebuild th
 - Each ZIP must contain exactly one `script.json` and a matching `main.lua`. It may contain the script at the ZIP root or inside one containing folder.
 - Supported file types: `.lua`, `.json`, `.md`, `.txt`. No symlinks or native binaries.
 - ZIP and expanded contents: at most 1 MB; at most 40 archive entries. Main Lua: at most 64 KB. Manifest: 16 KB. Optional translation files: at most 32, each at most 32 KB.
-- Catalogue: schema 1, at most 200 entries and 256 KB; unique script IDs. Supported games: Any, Aniimo, Loftia. API: 1.0. Permissions: ui, notifications, storage, session.
+- Catalogue: schema 1, at most 200 entries and 256 KB; unique script IDs. Supported games: Any, Aniimo, Loftia. API: 1.0 or 1.1. New 1.1 helpers require Launcher 0.11.0+. Permissions: ui, notifications, storage, session.
 - Optional manifest display fields: description (500 chars), category (40), version (40).
 - Source changes are a new reviewable version. Existing script folders are never silently overwritten by the current launcher; users stop/back up/remove the old folder before installing a replacement.
 - Review pull requests manually. CI checks JSON/source structure and packaging rules, not semantics or malicious intent.
