@@ -1,0 +1,15 @@
+{
+  "id": "example.feature-aniimo",
+  "name": "Feature Aniimo",
+  "author": "Yuri",
+  "game": "Aniimo",
+  "api": "1.2",
+  "version": "1.0.0",
+  "category": "Utilities",
+  "description": "Development starter. Requires the matching API 1.2 host; review permissions before enabling.",
+  "permissions": [
+    "ui",
+    "notifications",
+    "features"
+  ]
+}

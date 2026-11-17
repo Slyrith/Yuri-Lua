@@ -1,6 +1,8 @@
-# Yuri Lua API 1.1
+# Yuri Lua API 1.2 — private development
 
-Requires Yuri Launcher 0.11.0+. API 1.0 manifests and positional calls remain supported. New scripts should declare `"api": "1.1"`.
+The private 1.2 worker adds [gameplay APIs](GAMEPLAY.md) and six gameplay starters: nearby markers, Aniimo feature composition, Aniimo ability/health logic, Loftia own-garden farming, Loftia owned tools/seeds and Loftia resource assistance. These need the matching new trusted game host; public 0.11.0 and existing game DLLs do not provide that adapter. The 1.0/1.1 APIs below remain compatible.
+
+Requires Yuri Launcher 0.11.0+. API 1.0 manifests and positional calls remain supported. UI-only scripts can declare `"api": "1.1"`; gameplay scripts use `"api": "1.2"`. Private helpers 1.2.2 add [observed action tasks](ACTION-TASKS.md) alongside [workflows](WORKFLOWS.md), requiring their matching updated worker/launcher.
 
 ## Simple controls
 
@@ -23,7 +25,7 @@ Handle methods accept both colon and dot syntax. A callback setter returns the h
 
 ## Events
 
-- `yuri.on("session"|"tick"|"control", callback)` preserves API 1.0's single legacy handler for that event; registering another replaces it.
+- `yuri.on("session"|"tick"|"control"|"action"|"game"|"entities"|"farming"|"tools"|"abilities"|"resources", callback)` preserves API 1.0's single legacy handler for that event; registering another replaces it.
 - `cancel = yuri.events.subscribe(event, callback)` adds an independent listener. Call `cancel()` to unsubscribe. At most 32 active subscribers per event.
 - Control events include `event.id` and `event.value`. Tick/session payloads follow the existing approved session contract. Session means launcher game/client selection, not proof of a gameplay state.
 
@@ -54,6 +56,6 @@ Supported values: finite numbers, booleans and text. Keys follow the existing lo
 
 ## Permissions and limits
 
-Permissions remain `ui`, `notifications`, `storage`, `session`. Manifest API version may be 1.0 or 1.1. No unrestricted files, HTTP, shell, CLR, native calls, bytecode or game VM access was added. Resource limits and exact-version approval still apply. At most eight active script workers and 24 controls per script; 256 native API calls per request; bounded instruction slices and a 2.5-second host response deadline. Repeated errors stop the affected script rather than retry forever.
+Foundation permissions are `ui`, `notifications`, `storage`, `session`; private gameplay permissions are listed in [GAMEPLAY.md](GAMEPLAY.md). Manifest API version may be 1.0, 1.1 or 1.2 in the private worker. No unrestricted files, HTTP, shell, CLR, raw native calls, bytecode or game VM access was added. Resource limits and exact-version approval still apply. At most eight active script workers and 24 controls per script; 256 API calls per request; bounded instruction slices and a 2.5-second host response deadline. Repeated errors stop the affected script rather than retry forever.
 
-The interpreter sandbox has not had an independent security audit. Hash verification checks consistency, not author intent. Gameplay data/actions need a matching tested adapter and are still planned in the platform roadmap.
+The interpreter sandbox has not had an independent security audit. Hash verification checks consistency, not author intent. Gameplay data/actions need the matching trusted adapter; the private Aniimo source adapter is implemented but live testing remains pending.

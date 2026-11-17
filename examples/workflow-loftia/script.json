@@ -1,0 +1,16 @@
+{
+  "id": "example.workflow.loftia",
+  "name": "One resource workflow \u2014 Loftia",
+  "author": "Yuri",
+  "game": "Loftia",
+  "api": "1.2",
+  "version": "1.0.0",
+  "category": "Utilities",
+  "description": "One nearby interaction with result and observation waits. Private SDK helpers 1.2.1 required.",
+  "permissions": [
+    "ui",
+    "game.read",
+    "entities.read",
+    "actions.interact"
+  ]
+}

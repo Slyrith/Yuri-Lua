@@ -1,0 +1,8 @@
+{
+  "manifest_api": "1.2",
+  "helpers": "1.2.2",
+  "snapshot_date": "2026-11-17",
+  "status": "development",
+  "requires": "matching updated desktop worker and game host for gameplay",
+  "binary_release": false
+}

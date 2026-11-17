@@ -1,0 +1,11 @@
+{
+  "id": "example.tasks.equip.loftia",
+  "name": "Equip and observe - Loftia",
+  "author": "Yuri",
+  "game": "Loftia",
+  "api": "1.2",
+  "version": "1.0.0",
+  "category": "Utilities",
+  "description": "One owned watering-can equip request with fresh equipment observations. Private SDK helpers 1.2.2 required.",
+  "permissions": ["ui", "game.read", "tools.read", "actions.equip"]
+}

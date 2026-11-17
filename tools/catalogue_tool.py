@@ -11,7 +11,7 @@ from urllib.parse import quote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 ALLOWED = {".lua", ".json", ".md", ".txt"}
-PERMISSIONS = {"ui", "notifications", "storage", "session"}
+PERMISSIONS = {"ui", "notifications", "storage", "session", "game.read", "entities.read", "actions.interact", "actions.teleport", "features", "render", "farming.read", "tools.read", "actions.equip", "abilities.read", "resources.read"}
 ID = re.compile(r"[a-z][a-z0-9.-]{2,47}\Z", re.ASCII)
 
 
@@ -95,10 +95,10 @@ def validate_script(folder):
         fail("Invalid script ID")
     for key in ("name", "author"):
         text(manifest, key, 80, required=True)
-    if manifest.get("api") not in ("1.0", "1.1") or manifest.get("game") not in ("Any", "Aniimo", "Loftia"):
+    if manifest.get("api") not in ("1.0", "1.1", "1.2") or manifest.get("game") not in ("Any", "Aniimo", "Loftia"):
         fail("Unsupported API or game")
     permissions = manifest.get("permissions")
-    if (not isinstance(permissions, list) or len(permissions) > 4 or
+    if (not isinstance(permissions, list) or len(permissions) > 15 or
             any(not isinstance(p, str) or p not in PERMISSIONS for p in permissions) or
             len(set(permissions)) != len(permissions)):
         fail("Explicit, unique supported permissions are required")
@@ -157,8 +157,8 @@ def validate_catalogue(path):
     return data
 
 
-def validate(root):
-    catalogue = validate_catalogue(root / "catalogue.json")
+def validate(root, examples_only=False):
+    catalogue = {"scripts": []} if examples_only else validate_catalogue(root / "catalogue.json")
     examples = root / "examples"
     total = 0
     if examples.is_dir():
@@ -206,6 +206,7 @@ def main():
     commands = parser.add_subparsers(dest="command", required=True)
     check = commands.add_parser("validate")
     check.add_argument("--root", type=Path, default=ROOT)
+    check.add_argument("--examples-only", action="store_true", help="Validate examples without replacing or requiring a catalogue")
     build = commands.add_parser("package")
     build.add_argument("--script", type=Path, required=True)
     build.add_argument("--repo", required=True)
@@ -214,7 +215,7 @@ def main():
     args = parser.parse_args()
     try:
         if args.command == "validate":
-            scripts, examples = validate(args.root)
+            scripts, examples = validate(args.root, examples_only=args.examples_only)
             print(f"Valid: {scripts} catalogue entries, {examples} source examples. No Lua was executed.")
         else:
             archive, preview = package(args.script, args.repo, args.tag, args.output)

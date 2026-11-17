@@ -1,0 +1,17 @@
+{
+  "id": "example.tasks.loftia",
+  "name": "Travel and observe - Loftia",
+  "author": "Yuri",
+  "game": "Loftia",
+  "api": "1.2",
+  "version": "1.0.0",
+  "category": "Utilities",
+  "description": "One guarded journey with fresh position observations. Private SDK helpers 1.2.2 required.",
+  "permissions": [
+    "ui",
+    "notifications",
+    "game.read",
+    "entities.read",
+    "actions.teleport"
+  ]
+}

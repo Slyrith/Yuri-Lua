@@ -1,37 +1,47 @@
-# Publish a script
+# Publishing scripts when ready
 
-## First release: Hello Yuri
+Updating this repository's SDK source does not require a GitHub release.
+Do not publish script assets or edit catalogue entries merely to upload this SDK.
+The following steps are for a later, intentionally reviewed script release.
 
-The supplied first-release asset is `community.hello.zip`. It contains the exact current Hello Yuri source, not a new gameplay module. You can rebuild it from this repository:
+1. Review the source, permission scope, supported host versions and redistribution rights.
+2. Package the script without executing Lua:
 
 ```text
-python tools/catalogue_tool.py package --script examples/hello --repo Slyrith/Yuri-Lua --tag sdk-v1.0.0 --output dist
+python tools/catalogue_tool.py package --script examples/quickstart --repo Slyrith/Yuri-Lua --tag YOUR-REVIEWED-TAG --output dist
 ```
 
-1. Commit this repository starter with its empty root `catalogue.json`.
-2. Create a GitHub release with the exact tag `sdk-v1.0.0`, title **Yuri Lua SDK 1.0 — Foundation**, and upload `community.hello.zip` as its release asset. The SDK is still foundation scope; describe that accurately in the release notes. You may label this development release pre-release.
-3. Publish the release and confirm its asset downloads normally.
-4. Only then copy the proposed entry from `dist/catalogue-entry.json` into the root catalogue's `scripts` array. For the first and only entry, the supplied proposal can replace the empty root catalogue. Keep existing entries when publishing later scripts.
-5. Run `python tools/catalogue_tool.py validate`, commit the catalogue change, then refresh the launcher library.
+3. When the release is actually ready, upload the generated script ZIP to a
+   public GitHub release with that exact tag. Confirm the asset exists first.
+4. Merge the generated `dist/catalogue-entry.json` proposal by script ID into
+   the existing root `catalogue.json`. Do not replace a populated catalogue
+   with the one-entry proposal. Do not invent download URLs or placeholder hashes.
+5. Run `python tools/catalogue_tool.py validate`, commit the catalogue change,
+   then refresh the launcher library. Downloads start OFF and require review.
 
-If you use a different owner, repository name, tag or asset filename, rebuild the package metadata with those values. The URL and hash must describe the actual published ZIP. Do not edit the ZIP after calculating its hash.
+## Supported format
 
-## Later scripts
+- Manifest API: `1.0`, `1.1`, or `1.2`; games: `Any`, `Aniimo`, `Loftia`.
+- Explicit permissions: `ui`, `notifications`, `storage`, `session`, `game.read`,
+  `entities.read`, `actions.interact`, `actions.teleport`, `features`, `render`,
+  `farming.read`, `tools.read`, `actions.equip`, `abilities.read`, `resources.read`.
+  There are at most 15 unique grants. Request only what the script needs.
+- Exactly one `script.json` and a root `main.lua`; only Lua source, JSON and docs.
+  No symlinks, native binaries, bytecode or obfuscated loaders.
+- Expanded content and compressed ZIP: at most 1 MB. At most 40 source entries;
+  main Lua: 64 KB; manifest: 16 KB; 32 locale files at most 32 KB each.
+- Optional display fields: description (500 characters), category (40), version (40).
+- Catalogue schema 1: at most 200 scripts and 256 KB, unique IDs, supported GitHub
+  release ZIP URLs and exact SHA-256 values. The hash checks consistency, not trust.
 
-- Each ZIP must contain exactly one `script.json` and a matching `main.lua`. It may contain the script at the ZIP root or inside one containing folder.
-- Supported file types: `.lua`, `.json`, `.md`, `.txt`. No symlinks or native binaries.
-- ZIP and expanded contents: at most 1 MB; at most 40 archive entries. Main Lua: at most 64 KB. Manifest: 16 KB. Optional translation files: at most 32, each at most 32 KB.
-- Catalogue: schema 1, at most 200 entries and 256 KB; unique script IDs. Supported games: Any, Aniimo, Loftia. API: 1.0 or 1.1. New 1.1 helpers require Launcher 0.11.0+. Permissions: ui, notifications, storage, session.
-- Optional manifest display fields: description (500 chars), category (40), version (40).
-- Source changes are a new reviewable version. Existing script folders are never silently overwritten by the current launcher; users stop/back up/remove the old folder before installing a replacement.
-- Review pull requests manually. CI checks JSON/source structure and packaging rules, not semantics or malicious intent.
-
-The tool emits a **one-entry proposal**, not the complete catalogue for every existing script. Merge later entries by ID; never replace a populated catalogue with a one-entry file accidentally.
-
-## Release labels versus catalogue data
-
-The launcher's Stable/Beta game-package update channel follows GitHub Latest/pre-release labels. This **script catalogue** is a separate curated list fetched from the default branch. The current catalogue schema does not filter scripts by release label. Add only the exact versions you want library users to see.
+The package command does not upload files, change the live catalogue or execute Lua.
+CI validates structure; it does not approve behavior or certify script security.
+The catalogue is independent of the launcher's Stable/Beta game-package channel.
+API 1.2 examples need the matching private worker/host described in COMPATIBILITY.md.
 
 ## Launcher connection
 
-Place `ScriptLibrarySource.json` beside the Official launcher, with `{"repository":"Slyrith/Yuri-Lua"}`. No token is needed for the public catalogue. If you rename or transfer the repository, update this value too. A local `ScriptCatalogue.json` overrides the online catalogue.
+In the Official launcher, `ScriptLibrarySource.json` can contain
+`{"repository":"Slyrith/Yuri-Lua"}`. A local `ScriptCatalogue.json` takes precedence.
+UC remains an offline/manual-download edition. Existing catalogue entries are
+preserved by this SDK update; no token, database or Discord login is needed.

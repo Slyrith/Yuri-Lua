@@ -42,10 +42,23 @@ function storage.get(key) end
 function storage.set(key,value) end
 
 ---@class YuriAPI
-yuri = {ui=ui,storage=storage,api_version="1.1"}
+---@field game YuriGame
+---@field player? YuriPlayer
+---@field entities? YuriEntities
+---@field actions YuriActions
+---@field features? YuriFeatures
+---@field render? YuriRender
+---@field farming? YuriFarming
+---@field tools? YuriTools
+---@field abilities? YuriAbilities
+---@field resources? YuriResources
+---@field workflow YuriWorkflows
+---@field tasks YuriTasks
+---@field sdk_version string Helper revision; currently 1.2.2. Manifest/API version remains 1.2.
+yuri = {ui=ui,storage=storage,api_version="1.2"}
 ---@param text string Max 500 characters; notifications are labelled with their script owner.
 function yuri.notify(text) end
----@param event "tick"|"control"|"session"
+---@param event "tick"|"control"|"session"|"action"|"game"|"entities"|"farming"|"tools"|"abilities"|"resources"
 ---@param callback fun(event:table)
 function yuri.on(event,callback) end
 ---@param key string
@@ -107,7 +120,7 @@ function yuri.settings.get(key,default) end
 ---@param value string|number|boolean
 function yuri.settings.set(key,value) end
 yuri.events={}
----@param event "tick"|"control"|"session"
+---@param event "tick"|"control"|"session"|"action"|"game"|"entities"|"farming"|"tools"|"abilities"|"resources"
 ---@param callback fun(event:table)
 ---@return fun() unsubscribe
 function yuri.events.subscribe(event,callback) end

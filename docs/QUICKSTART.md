@@ -1,5 +1,7 @@
 # Your first Yuri script
 
+Private gameplay development: see [GAMEPLAY.md](GAMEPLAY.md) for the Aniimo/Loftia data, action, marker, feature and farming APIs. They require the matching new game host. The ordinary UI templates below continue to work without a game adapter.
+
 You do not need to understand the manifest format to begin.
 
 ## 1. Create it in Yuri
@@ -97,4 +99,4 @@ The `5` is the fallback if no value has been saved. Settings accept numbers, tru
 
 ## What this SDK can do today
 
-API 1.1 adds easier authoring to the existing foundation: controls, notifications, settings, timers, logging and events. It does not yet expose game entities, farming actions, combat modifications or custom gameplay ESP. Those need tested game adapters. Pick a supported template, make it work, then consult [API.md](API.md) and [ROADMAP.md](ROADMAP.md).
+The 1.1 foundation provides controls, notifications, settings, timers, logging and events. Private 1.2 adds gameplay queries, typed requests, feature leases and custom labels through the new Aniimo and Loftia adapters. These need its matching game host and live testing; existing public game DLLs do not implement the adapter. Loftia owned-bed queries, change events and a farming starter are implemented privately; owned seed/tool queries and a normal equip request are also implemented privately. Individual crop commands and full inventory quantities remain future work. Start with a supported template, then consult [API.md](API.md), [GAMEPLAY.md](GAMEPLAY.md) and [PLATFORM-ROADMAP.md](PLATFORM-ROADMAP.md).
